@@ -10,7 +10,7 @@ let shopIsOpen = true
 let order = (time, work) => {
 
     return new Promise((resolve, reject)=>{
-        if(!shopIsOpen) {
+        if(shopIsOpen) {
             reject(console.log("Our shop is closed"))
             return
         }
@@ -30,6 +30,7 @@ order(2000, ()=>{console.log(`${stocks.fruits[0]} selected.`)})
 })
 .then(()=>{
     return order(2000, ()=>{
+        
         console.log("Fruit chopped.")
     })
 })
