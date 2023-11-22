@@ -1,0 +1,38 @@
+*{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+header{
+    display: flex;
+    justify-content: space-between;
+    box-shadow: 0 1px 5px black;
+    align-items: center;
+    padding: 10px;
+    flex-basis: 10%;
+}
+header > img {
+    width: 40px;
+}
+nav{
+    display: flex;
+    gap: 20px;
+}
+.content{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    justify-content: center;
+    flex-basis: 85%;
+}
+.page{
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+footer{
+    background-color: gray;
+    margin-top: auto;
+    padding: 15px;
+}

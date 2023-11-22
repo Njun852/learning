@@ -1,0 +1,16 @@
+{
+  "files": {
+    "main.css": "/static/css/main.2c2e8fcd.css",
+    "main.js": "/static/js/main.d4d3df5d.js",
+    "static/media/photo-grid.png": "/static/media/photo-grid.294d59b66b94e0e456cf.png",
+    "static/media/katie-zaferes.png": "/static/media/katie-zaferes.8c39a93af3d2de2b3c27.png",
+    "static/media/airbnb-logo.png": "/static/media/airbnb-logo.e4424517383d14a03a24.png",
+    "index.html": "/index.html",
+    "main.2c2e8fcd.css.map": "/static/css/main.2c2e8fcd.css.map",
+    "main.d4d3df5d.js.map": "/static/js/main.d4d3df5d.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.2c2e8fcd.css",
+    "static/js/main.d4d3df5d.js"
+  ]
+}
