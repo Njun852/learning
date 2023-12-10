@@ -2,7 +2,6 @@ const {readFile, writeFile} = require("fs")
 
 
 function getResponse(data){
-
     return new Promise((resolve, reject)=>{
         readFile(`./content/${data}`, "utf-8", (err, result)=>{
             if(err) reject("Something went wrong")
@@ -10,7 +9,6 @@ function getResponse(data){
         })
     })
 }
-
 async function getData(){
     try{
         const first = await getResponse("data.txt")
