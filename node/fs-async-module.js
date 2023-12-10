@@ -13,7 +13,7 @@ async function getData(){
     try{
         const first = await getResponse("data.txt")
         const second = await getResponse("data-2.txt")
-        return [first, second]
+        console.log(first, second);
     }catch(err){
         console.log("Oh no")
     }
@@ -29,6 +29,4 @@ async function writeData(file, data){
 }
 
 getData()
-.then(data => console.log(data))
-writeData("data-async.txt", "This is an text writing using async ok")
 
