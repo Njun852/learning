@@ -14,7 +14,6 @@ const server = http.createServer((req, res)=>{
             res.end("<h1>Home Page</h1>")
             break
         case "/about":
-            expensiveCalculation()
             res.end("<h1>About Page</h1>")
             break
         default:
