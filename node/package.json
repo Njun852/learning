@@ -5,7 +5,7 @@
   "main": "fs-async-module.js",
   "scripts": {
     "start": "node async-pattern",
-    "dev": "nodemon async-pattern"
+    "dev": "nodemon http-header"
   },
   "keywords": [],
   "author": "",
