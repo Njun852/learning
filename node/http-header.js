@@ -1,13 +1,16 @@
 const http = require('http')
+const {readFileSync} = require('fs')
 
+const homepage = readFileSync('homepage.html')
+const aboutpage = readFileSync('aboutpage.html')
 const server = http.createServer((req, res)=>{
     let data = ""
     switch(req.url){
         case "/":
-            data = "<h1>Home Page</h1>"
+            data = homepage
             break
         case "/about":
-            data = "<h1>About page</h1>"
+            data = aboutpage
             break
         default:
             res.writeHead(404,"Go Home", {
