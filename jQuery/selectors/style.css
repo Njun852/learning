@@ -1,0 +1,19 @@
+*{
+    box-sizing: border-box;
+}
+body {
+    min-height: 90vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    background: black;
+    flex-direction: column;
+}
+.wrapper {
+    gap: 12px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    width: 500px;
+}

@@ -7,6 +7,7 @@ const {
     getPeople,
     getPostman
 } = require('../controllers/people')
+
 // router.delete('/:id', getDelete)
 // router.put('/:id', getPut)
 // router.post('/', getPost)
