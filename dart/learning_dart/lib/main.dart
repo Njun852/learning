@@ -4,10 +4,38 @@ void main() {
   runApp(const MyApp());
 }
 
-int getLength(List<String>? names) => names?.length ?? 0;
+enum Gender { male, female }
+
+abstract class LivingThing {
+  final String name;
+  final int age;
+  LivingThing(this.name, this.age);
+
+  void breath() {
+    print('$name is breathing');
+  }
+}
+
+class Person extends LivingThing {
+  final Gender gender;
+  Person(super.name, super.age, this.gender);
+  factory Person.anon(int age) => Person('Anon', age, Gender.male);
+  void run() {
+    print('$name is running');
+  }
+
+  void getGender() {
+    print('$name is ${gender.name}');
+  }
+}
+
 void test() {
-  print(getLength(['Foo', 'Bar', 'Baz']));
-  print(getLength(null));
+  final Person myPerson = Person('Bob', 32, Gender.male);
+  myPerson.run();
+  myPerson.getGender();
+  myPerson.breath();
+  final Person anon = Person.anon(28);
+  anon.breath();
 }
 
 class MyApp extends StatelessWidget {
