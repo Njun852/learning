@@ -4,12 +4,10 @@ void main() {
   runApp(const MyApp());
 }
 
+int getLength(List<String>? names) => names?.length ?? 0;
 void test() {
-  final names = ['Foo', 'Bar', 'Baz'];
-  final String foo = names[0];
-  print(foo);
-  names.add('New Name');
-  print(names[3]);
+  print(getLength(['Foo', 'Bar', 'Baz']));
+  print(getLength(null));
 }
 
 class MyApp extends StatelessWidget {
