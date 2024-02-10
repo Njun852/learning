@@ -4,38 +4,29 @@ void main() {
   runApp(const MyApp());
 }
 
-enum Gender { male, female }
+class ListOfThings {
+  var things = [];
 
-abstract class LivingThing {
-  final String name;
-  final int age;
-  LivingThing(this.name, this.age);
-
-  void breath() {
-    print('$name is breathing');
-  }
-}
-
-class Person extends LivingThing {
-  final Gender gender;
-  Person(super.name, super.age, this.gender);
-  factory Person.anon(int age) => Person('Anon', age, Gender.male);
-  void run() {
-    print('$name is running');
+  ListOfThings.inital(this.things);
+  ListOfThings();
+  ListOfThings operator +(var thing) {
+    things.add(thing);
+    return this;
   }
 
-  void getGender() {
-    print('$name is ${gender.name}');
+  @override
+  String toString() {
+    return things.toString();
   }
 }
 
 void test() {
-  final Person myPerson = Person('Bob', 32, Gender.male);
-  myPerson.run();
-  myPerson.getGender();
-  myPerson.breath();
-  final Person anon = Person.anon(28);
-  anon.breath();
+  ListOfThings numbers = ListOfThings();
+  numbers + 5;
+  numbers + 20;
+  ListOfThings newNumbers = numbers + 50;
+  print(newNumbers);
+  print(numbers);
 }
 
 class MyApp extends StatelessWidget {
