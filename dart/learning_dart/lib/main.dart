@@ -4,29 +4,17 @@ void main() {
   runApp(const MyApp());
 }
 
-class ListOfThings {
-  var things = [];
-
-  ListOfThings.inital(this.things);
-  ListOfThings();
-  ListOfThings operator +(var thing) {
-    things.add(thing);
-    return this;
-  }
-
-  @override
-  String toString() {
-    return things.toString();
-  }
+Iterable<int> countOneTwoThree() sync* {
+  yield 1;
+  yield 2;
+  yield 3;
 }
 
-void test() {
-  ListOfThings numbers = ListOfThings();
-  numbers + 5;
-  numbers + 20;
-  ListOfThings newNumbers = numbers + 50;
-  print(newNumbers);
-  print(numbers);
+void test() async {
+  for (final value in countOneTwoThree()) {
+    if (value % 2 == 0) break;
+    print(value);
+  }
 }
 
 class MyApp extends StatelessWidget {
