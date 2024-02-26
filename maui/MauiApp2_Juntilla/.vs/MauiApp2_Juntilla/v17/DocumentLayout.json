@@ -1,0 +1,55 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\njunj\\OneDrive\\Desktop\\learning\\maui\\MauiApp2_Juntilla\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{644F27A8-4504-45AC-90D4-EC4FF4F9D854}|MauiApp2_Juntilla\\MauiApp2_Juntilla.csproj|c:\\users\\njunj\\onedrive\\desktop\\learning\\maui\\mauiapp2_juntilla\\mauiapp2_juntilla\\mainpage.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{644F27A8-4504-45AC-90D4-EC4FF4F9D854}|MauiApp2_Juntilla\\MauiApp2_Juntilla.csproj|solutionrelative:mauiapp2_juntilla\\mainpage.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{644F27A8-4504-45AC-90D4-EC4FF4F9D854}|MauiApp2_Juntilla\\MauiApp2_Juntilla.csproj|c:\\users\\njunj\\onedrive\\desktop\\learning\\maui\\mauiapp2_juntilla\\mauiapp2_juntilla\\mainpage.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{644F27A8-4504-45AC-90D4-EC4FF4F9D854}|MauiApp2_Juntilla\\MauiApp2_Juntilla.csproj|solutionrelative:mauiapp2_juntilla\\mainpage.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "MainPage.xaml",
+              "DocumentMoniker": "C:\\Users\\njunj\\OneDrive\\Desktop\\learning\\maui\\MauiApp2_Juntilla\\MauiApp2_Juntilla\\MainPage.xaml",
+              "RelativeDocumentMoniker": "MauiApp2_Juntilla\\MainPage.xaml",
+              "ToolTip": "C:\\Users\\njunj\\OneDrive\\Desktop\\learning\\maui\\MauiApp2_Juntilla\\MauiApp2_Juntilla\\MainPage.xaml",
+              "RelativeToolTip": "MauiApp2_Juntilla\\MainPage.xaml",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAgAAAAYAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2024-02-26T01:44:45.669Z",
+              "IsPinned": true,
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "MainPage.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\njunj\\OneDrive\\Desktop\\learning\\maui\\MauiApp2_Juntilla\\MauiApp2_Juntilla\\MainPage.xaml.cs",
+              "RelativeDocumentMoniker": "MauiApp2_Juntilla\\MainPage.xaml.cs",
+              "ToolTip": "C:\\Users\\njunj\\OneDrive\\Desktop\\learning\\maui\\MauiApp2_Juntilla\\MauiApp2_Juntilla\\MainPage.xaml.cs",
+              "RelativeToolTip": "MauiApp2_Juntilla\\MainPage.xaml.cs",
+              "ViewState": "AQIAAAIAAAAAAAAAAAAxwAYAAAAFAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-02-26T01:55:11.887Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
