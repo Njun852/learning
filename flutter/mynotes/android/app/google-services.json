@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "621357544777",
+    "project_id": "mynotes-njun",
+    "storage_bucket": "mynotes-njun.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:621357544777:android:0979403e724b2d271e1698",
+        "android_client_info": {
+          "package_name": "com.avodah.avodaprovider"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA1culthuAhGYUkLcXlLrDwUPtixESAZ7U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:621357544777:android:03661d1b4f9464d31e1698",
+        "android_client_info": {
+          "package_name": "com.njun.mynotes"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA1culthuAhGYUkLcXlLrDwUPtixESAZ7U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
