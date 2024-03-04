@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:mynotes/views/login_view.dart';
 import 'firebase_options.dart';
 
 void main() {
@@ -10,18 +11,18 @@ void main() {
     theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true),
-    home: const HomePage(),
+    home: const LoginView(),
   ));
 }
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class RegisterView extends StatefulWidget {
+  const RegisterView({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<RegisterView> createState() => RegisterViewState();
 }
 
-class _HomePageState extends State<HomePage> {
+class RegisterViewState extends State<RegisterView> {
   late final TextEditingController _email;
   late final TextEditingController _password;
 
@@ -54,36 +55,49 @@ class _HomePageState extends State<HomePage> {
           builder: (context, snapshot) {
             switch (snapshot.connectionState) {
               case ConnectionState.done:
-              return Column(
-                children: [
-                  TextField(
-                    controller: _email,
-                    autocorrect: false,
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: const InputDecoration(hintText: 'Enter email'),
-                  ),
-                  TextField(
-                      controller: _password,
-                      obscureText: true,
-                      enableSuggestions: false,
+                return Column(
+                  children: [
+                    TextField(
+                      controller: _email,
                       autocorrect: false,
+                      keyboardType: TextInputType.emailAddress,
                       decoration:
-                          const InputDecoration(hintText: 'Enter password')),
-                  TextButton(
-                      onPressed: () async {
-                        final String email = _email.text;
-                        final String password = _password.text;
-
-                        final UserCredential userCredentials = await FirebaseAuth
-                            .instance
-                            .createUserWithEmailAndPassword(
-                                email: email, password: password);
-                        print(userCredentials);
-                      },
-                      child: const Text('Register'))
-                ],
-              );
-              default: 
+                          const InputDecoration(hintText: 'Enter email'),
+                    ),
+                    TextField(
+                        controller: _password,
+                        obscureText: true,
+                        enableSuggestions: false,
+                        autocorrect: false,
+                        decoration:
+                            const InputDecoration(hintText: 'Enter password')),
+                    TextButton(
+                        onPressed: () async {
+                          final String email = _email.text;
+                          final String password = _password.text;
+                          try {
+                            final UserCredential userCredentials =
+                                await FirebaseAuth.instance
+                                    .createUserWithEmailAndPassword(
+                                        email: email, password: password);
+                            print(userCredentials);
+                          } on FirebaseAuthException catch (e) {
+                            if (e.code == 'weak-password') {
+                              print('Weak Password');
+                            } else if (e.code == 'email-already-in-use') {
+                              print('This account already exist');
+                            } else if (e.code == 'invalid-email') {
+                              print('Email is not valid');
+                            } else {
+                              print('Something else happened');
+                              print(e.code);
+                            }
+                          }
+                        },
+                        child: const Text('Register'))
+                  ],
+                );
+              default:
                 return const Text('Loading...');
             }
           },
