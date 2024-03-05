@@ -38,7 +38,7 @@ class _LoginViewState extends State<LoginView> {
         ),
         body: FutureBuilder(
           future: Firebase.initializeApp(
-            options: DefaultFirebaseOptions.currentPlatform,
+            options: DefaultFirebaseOptions.currentPlatform
           ),
           builder: (context, snapshot) {
             switch (snapshot.connectionState) {
@@ -73,8 +73,9 @@ class _LoginViewState extends State<LoginView> {
                                   await FirebaseAuth.instance
                                       .signInWithEmailAndPassword(
                                           email: email, password: password);
+                              print(userCredentials);
                             } on FirebaseAuthException catch (e) {
-                              print(e.code +' dfjdk');
+                              print(e.code + ' dfjdk');
                             }
                           },
                           style: ButtonStyle(

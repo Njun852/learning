@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mynotes/views/login_view.dart';
+import 'package:mynotes/views/register_view.dart';
 import 'firebase_options.dart';
 
 void main() {
@@ -11,96 +12,36 @@ void main() {
     theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true),
-    home: const LoginView(),
+    home: const HomePage(),
   ));
 }
 
-class RegisterView extends StatefulWidget {
-  const RegisterView({super.key});
-
-  @override
-  State<RegisterView> createState() => RegisterViewState();
-}
-
-class RegisterViewState extends State<RegisterView> {
-  late final TextEditingController _email;
-  late final TextEditingController _password;
-
-  @override
-  void initState() {
-    _email = TextEditingController();
-    _password = TextEditingController();
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _email.dispose();
-    _password.dispose();
-    super.dispose();
-  }
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final Color theme = Theme.of(context).colorScheme.inversePrimary;
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text('Register'),
-          backgroundColor: theme,
-        ),
-        body: FutureBuilder(
-          future: Firebase.initializeApp(
-            options: DefaultFirebaseOptions.currentPlatform,
-          ),
-          builder: (context, snapshot) {
-            switch (snapshot.connectionState) {
-              case ConnectionState.done:
-                return Column(
-                  children: [
-                    TextField(
-                      controller: _email,
-                      autocorrect: false,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration:
-                          const InputDecoration(hintText: 'Enter email'),
-                    ),
-                    TextField(
-                        controller: _password,
-                        obscureText: true,
-                        enableSuggestions: false,
-                        autocorrect: false,
-                        decoration:
-                            const InputDecoration(hintText: 'Enter password')),
-                    TextButton(
-                        onPressed: () async {
-                          final String email = _email.text;
-                          final String password = _password.text;
-                          try {
-                            final UserCredential userCredentials =
-                                await FirebaseAuth.instance
-                                    .createUserWithEmailAndPassword(
-                                        email: email, password: password);
-                            print(userCredentials);
-                          } on FirebaseAuthException catch (e) {
-                            if (e.code == 'weak-password') {
-                              print('Weak Password');
-                            } else if (e.code == 'email-already-in-use') {
-                              print('This account already exist');
-                            } else if (e.code == 'invalid-email') {
-                              print('Email is not valid');
-                            } else {
-                              print('Something else happened');
-                              print(e.code);
-                            }
-                          }
-                        },
-                        child: const Text('Register'))
-                  ],
-                );
-              default:
-                return const Text('Loading...');
+    return FutureBuilder(
+        future: Firebase.initializeApp(
+            options: DefaultFirebaseOptions.currentPlatform),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            User? user = FirebaseAuth.instance.currentUser;
+            if (user?.emailVerified ?? false) {
+              print('Welcome user');
+            } else {
+              print('Please verify your email');
             }
-          },
-        ));
+            print(user);
+            return Scaffold(
+                appBar: AppBar(
+                    title: const Text('Home'),
+                    backgroundColor:
+                        Theme.of(context).colorScheme.inversePrimary),
+                body: const Text('Welcome to My Notes'));
+          } else {
+            return const Text('Loading, please wait');
+          }
+        });
   }
 }
