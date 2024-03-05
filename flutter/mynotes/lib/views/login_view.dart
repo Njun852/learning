@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:mynotes/firebase_options.dart';
+import 'package:mynotes/style.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -30,67 +31,46 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
-    final Color theme = Theme.of(context).colorScheme.inversePrimary;
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Login'),
-          backgroundColor: theme,
-        ),
-        body: FutureBuilder(
-          future: Firebase.initializeApp(
-            options: DefaultFirebaseOptions.currentPlatform
+      appBar: AppBar(title: const Text('Login'), backgroundColor: Style.color),
+      body: Column(
+        children: [
+          TextField(
+            controller: _email,
+            autocorrect: false,
+            keyboardType: TextInputType.emailAddress,
+            decoration: const InputDecoration(hintText: 'Enter email'),
           ),
-          builder: (context, snapshot) {
-            switch (snapshot.connectionState) {
-              case ConnectionState.done:
-                return Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    children: [
-                      TextField(
-                        controller: _email,
-                        autocorrect: false,
-                        keyboardType: TextInputType.emailAddress,
-                        decoration:
-                            const InputDecoration(hintText: 'Enter email'),
-                      ),
-                      TextField(
-                          controller: _password,
-                          obscureText: true,
-                          enableSuggestions: false,
-                          autocorrect: false,
-                          decoration: const InputDecoration(
-                              hintText: 'Enter password')),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      TextButton(
-                          onPressed: () async {
-                            final String email = _email.text;
-                            final String password = _password.text;
-                            try {
-                              final UserCredential userCredentials =
-                                  await FirebaseAuth.instance
-                                      .signInWithEmailAndPassword(
-                                          email: email, password: password);
-                              print(userCredentials);
-                            } on FirebaseAuthException catch (e) {
-                              print(e.code + ' dfjdk');
-                            }
-                          },
-                          style: ButtonStyle(
-                              backgroundColor: MaterialStatePropertyAll(
-                                  Theme.of(context)
-                                      .colorScheme
-                                      .inversePrimary)),
-                          child: const Text('Login'))
-                    ],
-                  ),
-                );
-              default:
-                return const Text('Loading...');
-            }
-          },
-        ));
+          TextField(
+              controller: _password,
+              obscureText: true,
+              enableSuggestions: false,
+              autocorrect: false,
+              decoration: const InputDecoration(hintText: 'Enter password')),
+          const SizedBox(
+            height: 10,
+          ),
+          TextButton(
+              onPressed: () async {
+                final String email = _email.text;
+                final String password = _password.text;
+                try {
+                  final UserCredential userCredentials =
+                      await FirebaseAuth.instance.signInWithEmailAndPassword(
+                          email: email, password: password);
+                  print(userCredentials);
+                } on FirebaseAuthException catch (e) {
+                  print(e.code);
+                }
+              },
+              child: const Text('Login')),
+          TextButton(
+              onPressed: () {
+                Navigator.of(context).pushNamedAndRemoveUntil('/register/', (route) => false);
+              },
+              child: const Text('Create an account'))
+        ],
+      ),
+    );
   }
 }
