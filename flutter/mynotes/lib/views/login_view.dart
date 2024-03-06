@@ -1,8 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'dart:developer' as devtools show log;
-
 import 'package:mynotes/constants/routes.dart';
+import 'package:mynotes/utils/show_error_dialog.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -60,24 +59,44 @@ class _LoginViewState extends State<LoginView> {
                   final UserCredential user = await FirebaseAuth.instance
                       .signInWithEmailAndPassword(
                           email: email, password: password);
-                  if (context.mounted) {
-                    if (!(user.user?.emailVerified ?? false)) {
-                      Navigator.of(context).pushNamedAndRemoveUntil(
-                          verifyEmailRoute, (route) => false);
-                      return;
-                    }
+
+                  if (!context.mounted) return;
+                  if (!(user.user?.emailVerified ?? false)) {
                     Navigator.of(context).pushNamedAndRemoveUntil(
-                        notesRoute, (route) => false);
+                        verifyEmailRoute, (route) => false);
+                    return;
                   }
+                  Navigator.of(context)
+                      .pushNamedAndRemoveUntil(notesRoute, (route) => false);
                 } on FirebaseAuthException catch (e) {
-                  devtools.log(e.code);
+                  if (!context.mounted) return;
+                  switch (e.code) {
+                    case 'invalid-credential':
+                      await showErrorDialog(context,
+                          'User doesn\'t exist or credential is invalid');
+                      //user doesnt exist or wrong credential
+                      break;
+                    case 'invalid-email':
+                      await showErrorDialog(context, 'Email is invalid');
+                      break;
+                    case 'channel-error':
+                      await showErrorDialog(
+                          context, 'Please enter the required informations');
+                      // a field is empty
+                      break;
+                    default:
+                      await showErrorDialog(context, 'Error: ${e.code}');
+                      break;
+                  }
+                } catch (e) {
+                  await showErrorDialog(context, 'Error: ${e.toString()}');
                 }
               },
               child: const Text('Login')),
           TextButton(
               onPressed: () {
                 Navigator.of(context)
-                    .pushNamedAndRemoveUntil('/register/', (route) => false);
+                    .pushNamedAndRemoveUntil(registerRoute, (route) => false);
               },
               child: const Text('Create an account'))
         ],
