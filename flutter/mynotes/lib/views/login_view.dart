@@ -1,9 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:mynotes/firebase_options.dart';
-import 'package:mynotes/style.dart';
 import 'dart:developer' as devtools show log;
+
+import 'package:mynotes/constants/routes.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -33,7 +32,9 @@ class _LoginViewState extends State<LoginView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Login'), backgroundColor: Style.color),
+      appBar: AppBar(
+        title: const Text('Login'),
+      ),
       body: Column(
         children: [
           TextField(
@@ -56,18 +57,18 @@ class _LoginViewState extends State<LoginView> {
                 final String email = _email.text;
                 final String password = _password.text;
                 try {
-                  await FirebaseAuth.instance
+                  final UserCredential user = await FirebaseAuth.instance
                       .signInWithEmailAndPassword(
-                          email: email, password: password)
-                      .then((value) {
-                    devtools.log(value.toString() + 'valuesss');
-                    if (value.user?.emailVerified ?? true) {
+                          email: email, password: password);
+                  if (context.mounted) {
+                    if (!(user.user?.emailVerified ?? false)) {
                       Navigator.of(context).pushNamedAndRemoveUntil(
-                          '/main-menu/', (route) => false);
-                    }else {
-                      throw FirebaseAuthException(code: 'invalid-credentials');
+                          verifyEmailRoute, (route) => false);
+                      return;
                     }
-                  });
+                    Navigator.of(context).pushNamedAndRemoveUntil(
+                        notesRoute, (route) => false);
+                  }
                 } on FirebaseAuthException catch (e) {
                   devtools.log(e.code);
                 }

@@ -1,9 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:mynotes/firebase_options.dart';
-import 'package:mynotes/style.dart';
-import 'package:mynotes/views/login_view.dart';
+import 'dart:developer' as devtools show log;
+
+import 'package:mynotes/constants/routes.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
@@ -33,8 +32,7 @@ class RegisterViewState extends State<RegisterView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar:
-            AppBar(title: const Text('Register'), backgroundColor: Style.color),
+        appBar: AppBar(title: const Text('Register')),
         body: Column(
           children: [
             TextField(
@@ -58,18 +56,20 @@ class RegisterViewState extends State<RegisterView> {
                         .instance
                         .createUserWithEmailAndPassword(
                             email: email, password: password);
-                    print(userCredentials);
-                    Navigator.of(context).pushNamed('/verify-email');
+                    devtools.log(userCredentials.toString());
+                    if(context.mounted) {
+                      Navigator.of(context).pushNamedAndRemoveUntil(verifyEmailRoute, ((route) => false));
+                    }
                   } on FirebaseAuthException catch (e) {
                     if (e.code == 'weak-password') {
-                      print('Weak Password');
+                      devtools.log('Weak Password');
                     } else if (e.code == 'email-already-in-use') {
-                      print('This account already exist');
+                      devtools.log('This account already exist');
                     } else if (e.code == 'invalid-email') {
-                      print('Email is not valid');
+                      devtools.log('Email is not valid');
                     } else {
-                      print('Something else happened');
-                      print(e.code);
+                      devtools.log('Something else happened');
+                      devtools.log(e.code);
                     }
                   }
                 },
@@ -77,7 +77,7 @@ class RegisterViewState extends State<RegisterView> {
             TextButton(
                 onPressed: () {
                   Navigator.of(context)
-                      .pushNamedAndRemoveUntil('/login/', (route) => false);
+                      .pushNamedAndRemoveUntil(loginRoute, (route) => false);
                 },
                 child: const Text('Already have an account? Login here'))
           ],
