@@ -14,5 +14,5 @@ Future<void> showErrorDialog(BuildContext context, String text) {
                 child: const Text('Okay'),
               )
             ],
-          )).then((value) => null);
+          ));
 }

@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'dart:developer' as devtools show log;
 
 import 'package:mynotes/constants/routes.dart';
+import 'package:mynotes/utils/show_error_dialog.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
@@ -56,21 +56,30 @@ class RegisterViewState extends State<RegisterView> {
                         .instance
                         .createUserWithEmailAndPassword(
                             email: email, password: password);
-                    devtools.log(userCredentials.toString());
-                    if(context.mounted) {
-                      Navigator.of(context).pushNamedAndRemoveUntil(verifyEmailRoute, ((route) => false));
-                    }
+
+                    if (!context.mounted) return;
+                    userCredentials.user?.sendEmailVerification();
+                    Navigator.of(context).pushNamed(verifyEmailRoute);
                   } on FirebaseAuthException catch (e) {
-                    if (e.code == 'weak-password') {
-                      devtools.log('Weak Password');
-                    } else if (e.code == 'email-already-in-use') {
-                      devtools.log('This account already exist');
-                    } else if (e.code == 'invalid-email') {
-                      devtools.log('Email is not valid');
-                    } else {
-                      devtools.log('Something else happened');
-                      devtools.log(e.code);
+                    if (!context.mounted) return;
+                    switch (e.code) {
+                      case 'weak-password':
+                        await showErrorDialog(
+                            context, 'Please enter a strong password');
+                        break;
+                      case 'email-already-in-use':
+                        await showErrorDialog(
+                            context, 'This account already exist');
+                        break;
+                      case 'invalid-email':
+                        await showErrorDialog(context, 'Email is not valid');
+                        break;
+                      default:
+                        await showErrorDialog(context, 'Error: ${e.code}');
+                        break;
                     }
+                  } catch (e) {
+                    await showErrorDialog(context, 'Error: ${e.toString()}');
                   }
                 },
                 child: const Text('Register')),
