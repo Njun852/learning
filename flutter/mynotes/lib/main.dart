@@ -1,3 +1,4 @@
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +22,8 @@ void main() {
     routes: {
       '/login/': (context) => const LoginView(),
       '/register/': (context) => const RegisterView(),
-      '/verify-email': (context) => const VerifyEmailView()
+      '/verify-email': (context) => const VerifyEmailView(),
+      '/main-menu/': (context) => const NotesView()
     },
   ));
 }
@@ -77,8 +79,15 @@ class _NotesViewState extends State<NotesView> {
         title: const Text('Notes'),
         actions: [
           PopupMenuButton<MenuAction>(
-            onSelected: (MenuAction value) {
-              print(value.name);
+            onSelected: (MenuAction value) async {
+              final shouldLogOut = await showLogoutDialog(context);
+              if (shouldLogOut) {
+                devtools.log('You are now logged out');
+                await FirebaseAuth.instance.signOut().then((value) => Navigator.of(context)
+                    .pushNamedAndRemoveUntil('/login/', (route) => false));
+              } else {
+                devtools.log('You are still signed in');
+              }
             },
             itemBuilder: (context) {
               return const [
@@ -92,4 +101,23 @@ class _NotesViewState extends State<NotesView> {
       body: const Text('Hello World'),
     );
   }
+}
+
+Future<bool> showLogoutDialog(BuildContext context) {
+  return showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+            title: const Text('Sign Out'),
+            content: const Text('Are you sure you want to log out?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('No'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text('Yes'),
+              ),
+            ],
+          )).then((bool? value) => value ?? false);
 }
