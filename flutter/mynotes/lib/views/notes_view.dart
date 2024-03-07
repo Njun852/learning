@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'dart:developer' as devtools show log;
 
 import 'package:mynotes/constants/routes.dart';
+import 'package:mynotes/services/auth/auth_exceptions.dart';
 
 enum MenuAction { logout }
 
@@ -27,9 +28,11 @@ class _NotesViewState extends State<NotesView> {
               final shouldLogOut = await showLogoutDialog(context);
               if (shouldLogOut) {
                 devtools.log('You are now logged out');
-                await FirebaseAuth.instance.signOut();
+                FirebaseAuthExceptionHandler.tryAndCatch(context, () async {
+                  await FirebaseAuth.instance.signOut();
+                });
                 await Navigator.of(context)
-                      .pushNamedAndRemoveUntil(loginRoute, (route) => false);
+                    .pushNamedAndRemoveUntil(loginRoute, (route) => false);
               } else {
                 devtools.log('You are still signed in');
               }

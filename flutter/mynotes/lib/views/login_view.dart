@@ -3,6 +3,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mynotes/constants/routes.dart';
+import 'package:mynotes/services/auth/auth_exceptions.dart';
 import 'package:mynotes/utils/show_error_dialog.dart';
 
 class LoginView extends StatefulWidget {
@@ -57,39 +58,21 @@ class _LoginViewState extends State<LoginView> {
               onPressed: () async {
                 final String email = _email.text;
                 final String password = _password.text;
-                try {
+                FirebaseAuthExceptionHandler.tryAndCatch(context, () async {
                   final UserCredential user = await FirebaseAuth.instance
                       .signInWithEmailAndPassword(
                           email: email, password: password);
-
                   if (!(user.user?.emailVerified ?? false)) {
                     Navigator.of(context).pushNamed(verifyEmailRoute);
                     return;
                   }
                   Navigator.of(context)
                       .pushNamedAndRemoveUntil(notesRoute, (route) => false);
-                } on FirebaseAuthException catch (e) {
-                  switch (e.code) {
-                    case 'invalid-credential':
-                      await showErrorDialog(context,
-                          'User doesn\'t exist or credential is invalid');
-                      //user doesnt exist or wrong credential
-                      break;
-                    case 'invalid-email':
-                      await showErrorDialog(context, 'Email is invalid');
-                      break;
-                    case 'channel-error':
-                      await showErrorDialog(
-                          context, 'Please enter the required informations');
-                      // a field is empty
-                      break;
-                    default:
-                      await showErrorDialog(context, 'Error: ${e.code}');
-                      break;
-                  }
-                } catch (e) {
-                  await showErrorDialog(context, 'Error: ${e.toString()}');
-                }
+                }, {
+                  'invalid-credentials': 'User doesn\'t exist or credential is invalid',
+                  'invalid-email': 'Email is invalid',
+                  'channel-error': 'Please enter the required informations',
+                });
               },
               child: const Text('Login')),
           TextButton(
