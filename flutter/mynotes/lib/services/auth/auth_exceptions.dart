@@ -13,7 +13,7 @@ class FirebaseAuthExceptionHandler {
       final String? err = handlers?[e.code];
       if (err != null) {
         await showErrorDialog(context, err);
-      }else {
+      } else {
         await showErrorDialog(context, 'Error: ${e.code}');
       }
     } catch (e) {
@@ -21,3 +21,21 @@ class FirebaseAuthExceptionHandler {
     }
   }
 }
+
+//login exception
+class InvalidCredentialsAuthExcepion implements Exception {}
+
+// register exceptions
+class WeakPasswordAuthException implements Exception {}
+
+class EmailAlreadyInUseAuthException implements Exception {}
+
+//others
+class ChannelErrorAuthException implements Exception {}
+
+class InvalidEmailAuthException implements Exception {}
+
+class UserNotLoggedInAuthException implements Exception {}
+
+//generic exceptions
+class AuthException implements Exception {}
