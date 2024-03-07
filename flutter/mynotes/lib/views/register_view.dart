@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -57,11 +59,9 @@ class RegisterViewState extends State<RegisterView> {
                         .createUserWithEmailAndPassword(
                             email: email, password: password);
 
-                    if (!context.mounted) return;
-                    userCredentials.user?.sendEmailVerification();
+                    await userCredentials.user?.sendEmailVerification();
                     Navigator.of(context).pushNamed(verifyEmailRoute);
                   } on FirebaseAuthException catch (e) {
-                    if (!context.mounted) return;
                     switch (e.code) {
                       case 'weak-password':
                         await showErrorDialog(

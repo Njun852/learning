@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mynotes/constants/routes.dart';
@@ -60,16 +62,13 @@ class _LoginViewState extends State<LoginView> {
                       .signInWithEmailAndPassword(
                           email: email, password: password);
 
-                  if (!context.mounted) return;
                   if (!(user.user?.emailVerified ?? false)) {
-                    Navigator.of(context).pushNamedAndRemoveUntil(
-                        verifyEmailRoute, (route) => false);
+                    Navigator.of(context).pushNamed(verifyEmailRoute);
                     return;
                   }
                   Navigator.of(context)
                       .pushNamedAndRemoveUntil(notesRoute, (route) => false);
                 } on FirebaseAuthException catch (e) {
-                  if (!context.mounted) return;
                   switch (e.code) {
                     case 'invalid-credential':
                       await showErrorDialog(context,
