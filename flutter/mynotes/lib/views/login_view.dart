@@ -1,9 +1,10 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/services/auth/auth_exceptions.dart';
+import 'package:mynotes/services/auth/auth_service.dart';
+import 'package:mynotes/services/auth/auth_user.dart';
 import 'package:mynotes/utils/show_error_dialog.dart';
 
 class LoginView extends StatefulWidget {
@@ -58,21 +59,18 @@ class _LoginViewState extends State<LoginView> {
               onPressed: () async {
                 final String email = _email.text;
                 final String password = _password.text;
-                FirebaseAuthExceptionHandler.tryAndCatch(context, () async {
-                  final UserCredential user = await FirebaseAuth.instance
-                      .signInWithEmailAndPassword(
-                          email: email, password: password);
-                  if (!(user.user?.emailVerified ?? false)) {
+                try {
+                  final AuthUser user = await AuthService.firebase()
+                      .logIn(email: email, password: password);
+                  if (!user.isEmailVerified) {
                     Navigator.of(context).pushNamed(verifyEmailRoute);
                     return;
                   }
                   Navigator.of(context)
                       .pushNamedAndRemoveUntil(notesRoute, (route) => false);
-                }, {
-                  'invalid-credentials': 'User doesn\'t exist or credential is invalid',
-                  'invalid-email': 'Email is invalid',
-                  'channel-error': 'Please enter the required informations',
-                });
+                } on AuthException catch (e) {
+                  showErrorDialog(context, e.message);
+                }
               },
               child: const Text('Login')),
           TextButton(

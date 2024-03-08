@@ -1,12 +1,11 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mynotes/constants/routes.dart';
+import 'package:mynotes/services/auth/auth_service.dart';
+import 'package:mynotes/services/auth/auth_user.dart';
 import 'package:mynotes/views/login_view.dart';
 import 'package:mynotes/views/notes_view.dart';
 import 'package:mynotes/views/register_view.dart';
 import 'package:mynotes/views/verify_email_view.dart';
-import 'firebase_options.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,23 +36,19 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: Firebase.initializeApp(
-          options: DefaultFirebaseOptions.currentPlatform),
+      future: AuthService.firebase().initialiaze(),
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          final User? user = FirebaseAuth.instance.currentUser;
-          if (user != null) {
-            if (user.emailVerified) {
-              return const NotesView();
-            } else {
-              return const VerifyEmailView();
-            }
-          } else {
-            return const LoginView();
-          }
-        } else {
+        if (snapshot.connectionState != ConnectionState.done) {
           return const Scaffold(body: CircularProgressIndicator());
         }
+        final AuthUser? user = AuthService.firebase().currentUser;
+        if (user == null) {
+          return const LoginView();
+        }
+        if (user.isEmailVerified) {
+          return const NotesView();
+        }
+        return const VerifyEmailView();
       },
     );
   }

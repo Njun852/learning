@@ -23,19 +23,53 @@ class FirebaseAuthExceptionHandler {
 }
 
 //login exception
-class InvalidCredentialsAuthExcepion implements Exception {}
+class InvalidCredentialsAuthExcepion extends AuthException
+    implements Exception {
+  @override
+  String get message {
+    return 'Wrong password or user doesn\'t exist';
+  }
+}
 
 // register exceptions
-class WeakPasswordAuthException implements Exception {}
+class WeakPasswordAuthException extends AuthException implements Exception {
+  @override
+  String get message {
+    return 'Weak password';
+  }
+}
 
-class EmailAlreadyInUseAuthException implements Exception {}
+class EmailAlreadyInUseAuthException extends AuthException
+    implements Exception {
+  @override
+  String get message {
+    return 'Email is already in use';
+  }
+}
 
 //others
-class ChannelErrorAuthException implements Exception {}
+class ChannelErrorAuthException extends AuthException implements Exception {
+  @override
+  String get message {
+    return 'Please enter the required informations';
+  }
+}
 
-class InvalidEmailAuthException implements Exception {}
+class InvalidEmailAuthException extends AuthException implements Exception {
+  @override
+  String get message {
+    return 'Wrong password or user doesn\'t exist';
+  }
+}
 
-class UserNotLoggedInAuthException implements Exception {}
+class UserNotLoggedInAuthException extends AuthException implements Exception {
+  @override
+  String get message {
+    return 'User is not logged in';
+  }
+}
 
 //generic exceptions
-class AuthException implements Exception {}
+class AuthException implements Exception {
+  final String message = 'Something went wrong';
+}

@@ -1,13 +1,12 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'dart:developer' as devtools show log;
-
 import 'package:mynotes/constants/routes.dart';
+import 'package:mynotes/enums/menu_action.dart';
 import 'package:mynotes/services/auth/auth_exceptions.dart';
-
-enum MenuAction { logout }
+import 'package:mynotes/services/auth/auth_service.dart';
+import 'package:mynotes/utils/show_error_dialog.dart';
 
 class NotesView extends StatefulWidget {
   const NotesView({super.key});
@@ -26,16 +25,18 @@ class _NotesViewState extends State<NotesView> {
           PopupMenuButton<MenuAction>(
             onSelected: (MenuAction value) async {
               final shouldLogOut = await showLogoutDialog(context);
-              if (shouldLogOut) {
-                devtools.log('You are now logged out');
-                FirebaseAuthExceptionHandler.tryAndCatch(context, () async {
-                  await FirebaseAuth.instance.signOut();
-                });
-                await Navigator.of(context)
-                    .pushNamedAndRemoveUntil(loginRoute, (route) => false);
-              } else {
+              if (!shouldLogOut) {
                 devtools.log('You are still signed in');
+                return;
               }
+              try {
+                await AuthService.firebase().logOut();
+                devtools.log('You are now logged out');
+              } on AuthException catch (e) {
+                showErrorDialog(context, e.message);
+              }
+              Navigator.of(context)
+                  .pushNamedAndRemoveUntil(loginRoute, (route) => false);
             },
             itemBuilder: (context) {
               return const [

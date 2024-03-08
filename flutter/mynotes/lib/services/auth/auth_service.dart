@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mynotes/services/auth/auth_provider.dart';
 import 'package:mynotes/services/auth/auth_user.dart';
+import 'package:mynotes/services/auth/firebase_auth_provider.dart';
 
 @immutable
 class AuthService implements AuthProvider {
@@ -8,6 +9,9 @@ class AuthService implements AuthProvider {
 
   const AuthService({required this.provider});
 
+  factory AuthService.firebase() {
+    return AuthService(provider: FirebaseAuthProvider());
+  }
   @override
   Future<AuthUser> createUser({
     required String email,
@@ -36,4 +40,7 @@ class AuthService implements AuthProvider {
   Future<void> sendEmailVerification() {
     return provider.sendEmailVerification();
   }
+
+  @override
+  Future<void> initialiaze() => provider.initialiaze();
 }

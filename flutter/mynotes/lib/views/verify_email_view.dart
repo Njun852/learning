@@ -1,8 +1,9 @@
 // ignore_for_file: use_build_context_synchronously
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/services/auth/auth_exceptions.dart';
+import 'package:mynotes/services/auth/auth_service.dart';
+import 'package:mynotes/utils/show_error_dialog.dart';
 
 class VerifyEmailView extends StatelessWidget {
   const VerifyEmailView({super.key});
@@ -18,16 +19,17 @@ class VerifyEmailView extends StatelessWidget {
           const Text('Confirmation link is sent to your email'),
           TextButton(
               onPressed: () async {
-                FirebaseAuthExceptionHandler.tryAndCatch(context, () async {
-                  await FirebaseAuth.instance.currentUser
-                      ?.sendEmailVerification();
-                });
+                try {
+                  await AuthService.firebase().sendEmailVerification();
+                } on AuthException catch (e) {
+                  showErrorDialog(context, e.message);
+                }
               },
               child: const Text('Resend email')),
           TextButton(
               onPressed: () async {
-                await FirebaseAuth.instance.signOut();
-                await Navigator.of(context)
+                await AuthService.firebase().logOut();
+                Navigator.of(context)
                     .pushNamedAndRemoveUntil(registerRoute, (route) => false);
               },
               child: const Text('Restart'))

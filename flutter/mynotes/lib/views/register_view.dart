@@ -1,10 +1,10 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/services/auth/auth_exceptions.dart';
+import 'package:mynotes/services/auth/auth_service.dart';
 import 'package:mynotes/utils/show_error_dialog.dart';
 
 class RegisterView extends StatefulWidget {
@@ -54,18 +54,14 @@ class RegisterViewState extends State<RegisterView> {
                 onPressed: () async {
                   final String email = _email.text;
                   final String password = _password.text;
-                  FirebaseAuthExceptionHandler.tryAndCatch(context, () async {
-                    final UserCredential userCredentials = await FirebaseAuth
-                        .instance
-                        .createUserWithEmailAndPassword(
-                            email: email, password: password);
-                    await userCredentials.user?.sendEmailVerification();
+                  try {
+                    await AuthService.firebase()
+                        .createUser(email: email, password: password);
+                    await AuthService.firebase().sendEmailVerification();
                     Navigator.of(context).pushNamed(verifyEmailRoute);
-                  }, {
-                    'weak-password': 'Please enter a strong password',
-                    'email-already-in-use': 'This account already exist',
-                    'invalid-email': 'Email is not valid'
-                  });
+                  } on AuthException catch (e) {
+                    showErrorDialog(context, e.message);
+                  }
                 },
                 child: const Text('Register')),
             TextButton(
