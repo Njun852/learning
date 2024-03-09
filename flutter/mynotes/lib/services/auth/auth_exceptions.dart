@@ -4,24 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mynotes/utils/show_error_dialog.dart';
 
-class FirebaseAuthExceptionHandler {
-  static void tryAndCatch(BuildContext context, tryCallback,
-      [Map<String, String>? handlers]) async {
-    try {
-      await tryCallback();
-    } on FirebaseAuthException catch (e) {
-      final String? err = handlers?[e.code];
-      if (err != null) {
-        await showErrorDialog(context, err);
-      } else {
-        await showErrorDialog(context, 'Error: ${e.code}');
-      }
-    } catch (e) {
-      await showErrorDialog(context, 'Error: ${e.toString()}');
-    }
-  }
-}
-
 //login exception
 class InvalidCredentialsAuthExcepion extends AuthException
     implements Exception {
@@ -58,7 +40,7 @@ class ChannelErrorAuthException extends AuthException implements Exception {
 class InvalidEmailAuthException extends AuthException implements Exception {
   @override
   String get message {
-    return 'Wrong password or user doesn\'t exist';
+    return 'Invalid email';
   }
 }
 

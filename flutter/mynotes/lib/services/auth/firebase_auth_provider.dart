@@ -40,7 +40,11 @@ class FirebaseAuthProvider implements AuthProvider {
   AuthUser? get currentUser {
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser == null) return null;
-    return AuthUser(currentUser.emailVerified);
+    return AuthUser(
+      isEmailVerified: currentUser.emailVerified,
+      password: 'hidden',
+      email: currentUser.email,
+    );
   }
 
   @override
@@ -90,7 +94,8 @@ class FirebaseAuthProvider implements AuthProvider {
   @override
   Future<void> initialiaze() async {
     try {
-      await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+      await Firebase.initializeApp(
+          options: DefaultFirebaseOptions.currentPlatform);
     } on FirebaseAuthException catch (_) {
       throw AuthException();
     } catch (_) {
