@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:mynotes/services/auth/crud/crud_exceptios.dart';
 import 'package:sqflite/sqflite.dart';
@@ -6,7 +8,23 @@ import 'package:path_provider/path_provider.dart'
 import 'package:path/path.dart' show join;
 
 class NoteService {
+  List<DatabaseNote> _notes = [];
+  final StreamController _notesStreamController =
+      StreamController<List<DatabaseNote>>.broadcast();
   Database? _db;
+  bool dbIsOpen = false;
+  Stream<List<DatabaseNote>> get notes =>
+      _notesStreamController.stream as Stream<List<DatabaseNote>>;
+
+  static final NoteService _shared = NoteService._sharedInstance();
+  NoteService._sharedInstance();
+  factory NoteService() => _shared;
+  Future<void> _cacheNotes() async {
+    final allNotes = await getAllNotes();
+    _notes = allNotes.toList();
+    _notesStreamController.add(_notes);
+  }
+
   Database get db {
     if (_db == null) throw DatabaseIsNotOpenException();
     return _db!;
@@ -25,6 +43,8 @@ class NoteService {
 
       await db.execute(createUserTable);
       await db.execute(createNoteTable);
+      await _cacheNotes();
+      dbIsOpen = true;
     } on MissingPlatformDirectoryException {
       throw UnableToGetDocumentsDirectory();
     }
@@ -33,6 +53,7 @@ class NoteService {
   Future<void> close() async {
     await db.close();
     db = null;
+    dbIsOpen = false;
   }
 
   Future<DatabaseNote> createNote(DatabaseUser owner) async {
@@ -47,8 +68,11 @@ class NoteService {
       textColumn: text,
       isSyncedWithCloudColumn: 1
     });
-    return DatabaseNote(
+    final note = DatabaseNote(
         id: noteId, text: text, isSyncedWithCloud: false, userId: dbUser.id);
+    _notes.add(note);
+    _notesStreamController.add(_notes);
+    return note;
   }
 
   Future<DatabaseNote> updateNote(DatabaseNote note, String text) async {
@@ -63,6 +87,10 @@ class NoteService {
     final notes =
         await db.query(noteTable, where: '$id = ?', limit: 1, whereArgs: [id]);
     if (notes.isEmpty) throw CouldNotFindNote();
+    final DatabaseNote note = DatabaseNote.fromRow(notes.first);
+    _notes.removeWhere((element) => element.id == id);
+    _notes.add(note);
+    _notesStreamController.add(_notes);
     return DatabaseNote.fromRow(notes.first);
   }
 
@@ -72,15 +100,32 @@ class NoteService {
   }
 
   Future<int> deleteAllNotes() async {
-    return await db.delete(noteTable);
+    final int numOfDeletedNotes = await db.delete(noteTable);
+    _notes = [];
+    _notesStreamController.add(_notes);
+    return numOfDeletedNotes;
   }
 
-  Future<void> deleteNote(DatabaseNote note) async {
-    final notes = await db.query(noteTable,
-        where: '$idColumn = ?', limit: 1, whereArgs: [note.id]);
+  Future<void> deleteNote(int id) async {
+    final notes = await db
+        .query(noteTable, where: '$idColumn = ?', limit: 1, whereArgs: [id]);
     if (notes.isEmpty) throw CouldNotFindNote();
+    _notes.removeWhere((n) => n.id == id);
+    _notesStreamController.add(_notes);
 
-    await db.delete(noteTable, where: 'id = ?', whereArgs: [note.id]);
+    await db.delete(noteTable, where: 'id = ?', whereArgs: [id]);
+  }
+
+  Future<DatabaseUser> getOrCreateUser(String email) async {
+    try {
+      final user = await getUser(email);
+      return user;
+    } on CouldNotFindUser {
+      final createdUser = await createUser(email);
+      return createdUser;
+    } catch (_) {
+      rethrow;
+    }
   }
 
   Future<DatabaseUser> createUser(String email) async {
@@ -176,15 +221,13 @@ const String emailColumn = 'email';
 const String textColumn = 'text';
 const String isSyncedWithCloudColumn = 'is_synced_with_cloud';
 
-const String createUserTable = '''
-  CREATE TABLE IF NOT EXIST "user" (
+const String createUserTable = '''CREATE TABLE IF NOT EXISTS "user" (
   "id"	INTEGER,
   "email"	TEXT NOT NULL UNIQUE,
   PRIMARY KEY("id" AUTOINCREMENT));
   ''';
 
-const String createNoteTable = '''
-  CREATE TABLE IF NOT EXIST "note" (
+const String createNoteTable = '''CREATE TABLE IF NOT EXISTS "note" (
   "id"	INTEGER,
   "user_id"	INTEGER NOT NULL,
   "text"	TEXT,

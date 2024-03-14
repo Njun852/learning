@@ -6,6 +6,7 @@ import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/enums/menu_action.dart';
 import 'package:mynotes/services/auth/auth_exceptions.dart';
 import 'package:mynotes/services/auth/auth_service.dart';
+import 'package:mynotes/services/auth/crud/note_service.dart';
 import 'package:mynotes/utils/show_error_dialog.dart';
 
 class NotesView extends StatefulWidget {
@@ -16,6 +17,24 @@ class NotesView extends StatefulWidget {
 }
 
 class _NotesViewState extends State<NotesView> {
+  late final NoteService _noteService;
+  String get userEmail => AuthService.firebase().currentUser!.email!;
+  @override
+  void initState() {
+    _noteService = NoteService();
+    if (!_noteService.dbIsOpen) {
+      _noteService.open();
+    }
+
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _noteService.close();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,7 +66,27 @@ class _NotesViewState extends State<NotesView> {
           )
         ],
       ),
-      body: const Text('Hello World'),
+      body: FutureBuilder(
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            return StreamBuilder(
+                stream: _noteService.notes,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Text('Waiting');
+                  } else if (snapshot.connectionState ==
+                      ConnectionState.active) {
+                    return Text(snapshot.hasData.toString());
+                  } else {
+                    return const CircularProgressIndicator();
+                  }
+                });
+          } else {
+            return const CircularProgressIndicator();
+          }
+        },
+        future: _noteService.getOrCreateUser(userEmail),
+      ),
     );
   }
 }
