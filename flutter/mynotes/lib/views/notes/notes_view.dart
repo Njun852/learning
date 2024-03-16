@@ -39,8 +39,16 @@ class _NotesViewState extends State<NotesView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Notes'),
+        title: const Text(
+          'Your Notes',
+          style: TextStyle(color: Colors.white),
+        ),
         actions: [
+          IconButton(
+              onPressed: () async {
+                Navigator.of(context).pushNamed(newNoteRoute);
+              },
+              icon: const Icon(Icons.add)),
           PopupMenuButton<MenuAction>(
             onSelected: (MenuAction value) async {
               final shouldLogOut = await showLogoutDialog(context);
@@ -72,11 +80,8 @@ class _NotesViewState extends State<NotesView> {
             return StreamBuilder(
                 stream: _noteService.notes,
                 builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Text('Waiting');
-                  } else if (snapshot.connectionState ==
-                      ConnectionState.active) {
-                    return Text(snapshot.hasData.toString());
+                  if (snapshot.connectionState == ConnectionState.active) {
+                    return const Text('Waiting for all notes...');
                   } else {
                     return const CircularProgressIndicator();
                   }
