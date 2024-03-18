@@ -20,19 +20,10 @@ class _NotesViewState extends State<NotesView> {
   late final NoteService _noteService;
   String get userEmail => AuthService.firebase().currentUser!.email!;
   @override
-  void initState() {
+  void initState()  {
     _noteService = NoteService();
-    if (!_noteService.dbIsOpen) {
-      _noteService.open();
-    }
 
     super.initState();
-  }
-
-  @override
-  void dispose() {
-    _noteService.close();
-    super.dispose();
   }
 
   @override
@@ -80,10 +71,29 @@ class _NotesViewState extends State<NotesView> {
             return StreamBuilder(
                 stream: _noteService.notes,
                 builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.active) {
-                    return const Text('Waiting for all notes...');
-                  } else {
-                    return const CircularProgressIndicator();
+                  switch (snapshot.connectionState) {
+                    case ConnectionState.active:
+                    case ConnectionState.waiting:
+                      if (snapshot.hasData) {
+                        final allNotes = snapshot.data as List<DatabaseNote>;
+                        // print(allNotes);
+                        return ListView.builder(
+                          itemCount: allNotes.length,
+                          itemBuilder: (context, index) {
+                            final note = allNotes[index];
+                            return ListTile(
+                              title: Text(
+                                note.text,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            );
+                          },
+                        );
+                      }
+                      return const CircularProgressIndicator();
+                    default:
+                      return const CircularProgressIndicator();
                   }
                 });
           } else {

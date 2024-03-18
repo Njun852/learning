@@ -10,15 +10,7 @@ import 'package:mynotes/views/verify_email_view.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
+  runApp(MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
           appBarTheme: const AppBarTheme(
@@ -42,9 +34,10 @@ class MyApp extends StatelessWidget {
         notesRoute: (context) => const NotesView(),
         newNoteRoute: (context) => const NewNoteView()
       },
-    );
-  }
+    ));
 }
+
+
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

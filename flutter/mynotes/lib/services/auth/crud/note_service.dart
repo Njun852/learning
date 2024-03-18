@@ -8,17 +8,21 @@ import 'package:path_provider/path_provider.dart'
 import 'package:path/path.dart' show join;
 
 class NoteService {
-  List<DatabaseNote> _notes = [];
-  final StreamController _notesStreamController =
-      StreamController<List<DatabaseNote>>.broadcast();
   Database? _db;
   bool dbIsOpen = false;
   Stream<List<DatabaseNote>> get notes =>
       _notesStreamController.stream as Stream<List<DatabaseNote>>;
 
+  late final StreamController _notesStreamController;
   static final NoteService _shared = NoteService._sharedInstance();
-  NoteService._sharedInstance();
   factory NoteService() => _shared;
+  List<DatabaseNote> _notes = [];
+  NoteService._sharedInstance() {
+    _notesStreamController =
+        StreamController<List<DatabaseNote>>.broadcast(onListen: () {
+      _notesStreamController.sink.add(_notes);
+    });
+  }
   Future<void> _cacheNotes() async {
     final allNotes = await getAllNotes();
     _notes = allNotes.toList();
@@ -77,20 +81,22 @@ class NoteService {
 
   Future<DatabaseNote> updateNote(DatabaseNote note, String text) async {
     getNote(note.id);
+    print('NOOOOTE: ${note.id}');
     final int updatedNotes = await db.update(noteTable, {textColumn: text},
-        where: '$idColumn = ?', whereArgs: [note.id]);
+        where: 'id = ?', whereArgs: [note.id]);
     if (updatedNotes != 1) throw CouldNotUpdateNote();
-    return getNote(note.id);
+    final updatedNote = await getNote(note.id);
+    _notes.removeWhere((element) => element.id == updatedNote.id);
+    _notes.add(updatedNote);
+    print('UPDATED: [${updatedNote.id}, ${updatedNote.text}]');
+    _notesStreamController.add(_notes);
+    return updatedNote;
   }
 
   Future<DatabaseNote> getNote(int id) async {
     final notes =
-        await db.query(noteTable, where: '$id = ?', limit: 1, whereArgs: [id]);
+        await db.query(noteTable, where: '$idColumn = ?', limit: 1, whereArgs: [id]);
     if (notes.isEmpty) throw CouldNotFindNote();
-    final DatabaseNote note = DatabaseNote.fromRow(notes.first);
-    _notes.removeWhere((element) => element.id == id);
-    _notes.add(note);
-    _notesStreamController.add(_notes);
     return DatabaseNote.fromRow(notes.first);
   }
 
@@ -117,6 +123,10 @@ class NoteService {
   }
 
   Future<DatabaseUser> getOrCreateUser(String email) async {
+    if (!dbIsOpen) {
+      await open();
+    }
+
     try {
       final user = await getUser(email);
       return user;
@@ -206,7 +216,7 @@ class DatabaseNote {
   bool operator ==(covariant DatabaseNote other) => other.id == id;
   @override
   String toString() =>
-      'Note, id: $id\nuserId: $userId\nisSyncedWithCloud:\n$isSyncedWithCloud';
+      'Note, id: $id ,userId: $userId, isSyncedWithCloud:$isSyncedWithCloud, Text: $text';
 
   @override
   int get hashCode => id.hashCode;

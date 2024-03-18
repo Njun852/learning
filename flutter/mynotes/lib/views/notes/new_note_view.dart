@@ -24,6 +24,7 @@ class _NewNoteViewState extends State<NewNoteView> {
   void _textControllerListener() async {
     final note = _note;
     if (note == null) return;
+    print('TO UPDATE: [${note.id}, ${note.text}]');
     final text = _textController.text;
     await _noteService.updateNote(note, text);
   }
@@ -40,7 +41,7 @@ class _NewNoteViewState extends State<NewNoteView> {
     }
     final currentUser = AuthService.firebase().currentUser!;
     final email = currentUser.email!;
-    final owner = await NoteService().getOrCreateUser(email);
+    final owner = await NoteService().getUser(email);
     return await _noteService.createNote(owner);
   }
 
@@ -80,12 +81,14 @@ class _NewNoteViewState extends State<NewNoteView> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             _note = snapshot.data as DatabaseNote;
+            _setUpTextControllerListener();
             return TextField(
               controller: _textController,
               keyboardType: TextInputType.multiline,
               maxLines: null,
-              decoration:
-                  const InputDecoration(hintText: 'Start typing your note...', border: InputBorder.none),
+              decoration: const InputDecoration(
+                  hintText: 'Start typing your note...',
+                  border: InputBorder.none),
             );
           } else {
             return const Text('Hi');
