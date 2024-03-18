@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:mynotes/services/auth/auth_service.dart';
 import 'package:mynotes/services/auth/crud/note_service.dart';
+import 'package:mynotes/utils/generics/get_arguments.dart';
 
-class NewNoteView extends StatefulWidget {
-  const NewNoteView({super.key});
+class CreateUpdateNoteView extends StatefulWidget {
+  const CreateUpdateNoteView({super.key});
 
   @override
-  State<NewNoteView> createState() => _NewNoteViewState();
+  State<CreateUpdateNoteView> createState() => _CreateUpdateNoteViewState();
 }
 
-class _NewNoteViewState extends State<NewNoteView> {
+class _CreateUpdateNoteViewState extends State<CreateUpdateNoteView> {
   DatabaseNote? _note;
+  late String _title = 'Create Note';
   late final NoteService _noteService;
   late final TextEditingController _textController;
 
@@ -24,7 +26,6 @@ class _NewNoteViewState extends State<NewNoteView> {
   void _textControllerListener() async {
     final note = _note;
     if (note == null) return;
-    print('TO UPDATE: [${note.id}, ${note.text}]');
     final text = _textController.text;
     await _noteService.updateNote(note, text);
   }
@@ -34,15 +35,20 @@ class _NewNoteViewState extends State<NewNoteView> {
     _textController.addListener(_textControllerListener);
   }
 
-  Future<DatabaseNote> createNewNote() async {
-    final existingNote = _note;
+  Future<DatabaseNote> createOrGetExistingNote() async {
+    final existingNote = context.getArgument<DatabaseNote>();
     if (existingNote != null) {
+      setState(() {
+        _title = 'Update Note';
+      });
+      _textController.value = TextEditingValue(text: existingNote.text);
       return existingNote;
     }
     final currentUser = AuthService.firebase().currentUser!;
     final email = currentUser.email!;
     final owner = await NoteService().getUser(email);
-    return await _noteService.createNote(owner);
+    _note = await _noteService.createNote(owner);
+    return _note!;
   }
 
   void _deleteNoteIfTextIsEmpty() async {
@@ -74,13 +80,12 @@ class _NewNoteViewState extends State<NewNoteView> {
         leading: const BackButton(
           color: Colors.white,
         ),
-        title: const Text('New Note'),
+        title: Text(_title),
       ),
       body: FutureBuilder(
-        future: createNewNote(),
+        future: createOrGetExistingNote(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            _note = snapshot.data as DatabaseNote;
             _setUpTextControllerListener();
             return TextField(
               controller: _textController,
