@@ -24,8 +24,14 @@ class _NotesViewState extends State<NotesView> {
   @override
   void initState() {
     _noteService = NoteService();
-
+    print(userEmail);
     super.initState();
+  }
+
+  @override
+  void dispose() async {
+    super.dispose();
+    await _noteService.close();
   }
 
   @override
@@ -101,7 +107,7 @@ class _NotesViewState extends State<NotesView> {
             return const CircularProgressIndicator();
           }
         },
-        future: _noteService.getOrCreateUser(userEmail),
+        future: _noteService.getOrCreateUser(email: userEmail),
       ),
     );
   }

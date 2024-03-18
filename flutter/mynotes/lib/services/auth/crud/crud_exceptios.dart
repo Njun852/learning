@@ -19,3 +19,5 @@ class CouldNotDeleteUserException implements Exception {}
 class CouldNotFindUser implements Exception {}
 
 class CouldNotCreateUserException implements Exception {}
+
+class UserShouldBeSetBeforeReadingNotes implements Exception {}
