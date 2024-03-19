@@ -41,9 +41,9 @@ class FirebaseAuthProvider implements AuthProvider {
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser == null) return null;
     return AuthUser(
+      id: currentUser.uid,
       isEmailVerified: currentUser.emailVerified,
-      password: 'hidden',
-      email: currentUser.email,
+      email: currentUser.email!,
     );
   }
 

@@ -26,15 +26,12 @@ void main() {
         throwsA(const TypeMatcher<ChannelErrorAuthException>()),
       );
       expect(
-        provider.createUser(email: 'foobarbaz@gmail.com', password: 'hello'),
+        provider.createUser(email: 'foobarbaz@gmail.com', password: ''),
         throwsA(const TypeMatcher<EmailAlreadyInUseAuthException>()),
       );
     });
     test('Good user creation', () async {
-      final user = await provider.createUser(
-        email: 'njun1232@gmail.com',
-        password: 'yoooo',
-      );
+      final user = await provider.createUser(email: 'njun1232@gmail.com', password: '');
       expect(provider._currentUser, user);
     });
     test('User verifation', () async {
@@ -53,17 +50,16 @@ void main() {
       expect(provider.logOut(),
           throwsA(const TypeMatcher<UserNotLoggedInAuthException>()));
     });
-    test('Bad user login', () {
-      expect(provider.logIn(email: 'foobarbaz@gmail.com', password: 'yoooo'),
-          throwsA(const TypeMatcher<InvalidCredentialsAuthExcepion>()));
-      expect(provider.logIn(email: '', password: ''),
-          throwsA(const TypeMatcher<ChannelErrorAuthException>()));
+    test('Bad user login', () async {
+      await expectLater(
+        provider.logIn(email: '', password: ''),
+        throwsA(const TypeMatcher<InvalidEmailAuthException>()),
+      );
     });
     test('Good user login', () async {
-      AuthUser? user = await provider.logIn(
-          email: 'foobarbaz@gmail.com', password: 'foobarbaz');
+      AuthUser? user = await provider.logIn(email: 'foobarbaz@gmail.com', password: '');
       expect(user, provider._currentUser);
-      user = await provider.logIn(email: 'joe@gmail.com', password: 'joe123');
+      user = await provider.logIn(email: 'joe@gmail.com', password: '');
       expect(user, provider._currentUser);
     });
   });
@@ -82,9 +78,12 @@ class MockAuthProvider implements AuthProvider {
   bool get isInitialized => _isInitialized;
   final Map<String, AuthUser> _userDB = {
     'foobarbaz@gmail.com': const AuthUser(
-        isEmailVerified: true, password: 'foobarbaz', email: 'foobarbaz@gmail'),
+        isEmailVerified: true, email: 'foobarbaz@gmail', id: 'my_id'),
     'joe@gmail.com': const AuthUser(
-        isEmailVerified: true, password: 'joe123', email: 'joe@gmail.com')
+      isEmailVerified: true,
+      id: 'joe123',
+      email: 'joe@gmail.com',
+    )
   };
 
   @override
@@ -92,13 +91,17 @@ class MockAuthProvider implements AuthProvider {
     required String email,
     required String password,
   }) async {
-    if (email.isEmpty || password.isEmpty) throw ChannelErrorAuthException();
+    if (email.isEmpty) throw ChannelErrorAuthException();
     if (!isInitialized) throw ProviderNotInitialized();
     if (_userDB[email] != null) throw EmailAlreadyInUseAuthException();
+    if (email.isEmpty) throw ChannelErrorAuthException();
     AuthUser newUser = await Future.delayed(
         const Duration(seconds: 1),
-        () =>
-            AuthUser(isEmailVerified: false, email: email, password: password));
+        () => AuthUser(
+              isEmailVerified: false,
+              email: email,
+              id: 'random_id',
+            ));
     _userDB.addAll({email: newUser});
     _currentUser = newUser;
     return newUser;
@@ -120,16 +123,16 @@ class MockAuthProvider implements AuthProvider {
   }) async {
     if (!isInitialized) throw ProviderNotInitialized();
     if (email.isEmpty) {
-      if (password.isEmpty) throw ChannelErrorAuthException();
       throw InvalidEmailAuthException();
     }
-    if (_userDB[email] == null || password != _userDB[email]?.password) {
+    if (_userDB[email] == null) {
       throw InvalidCredentialsAuthExcepion();
     }
     AuthUser user = AuthUser(
-        isEmailVerified: _userDB[email]?.isEmailVerified ?? false,
-        email: email,
-        password: password);
+      isEmailVerified: _userDB[email]?.isEmailVerified ?? false,
+      email: email,
+      id: 'mh_id',
+    );
     _currentUser = user;
     return await Future.delayed(const Duration(seconds: 1), () => user);
   }
@@ -149,9 +152,10 @@ class MockAuthProvider implements AuthProvider {
     if (currentUser == null) throw UserNotLoggedInAuthException();
     return Future.delayed(const Duration(seconds: 1), () {
       _currentUser = AuthUser(
-          email: currentUser?.email,
-          password: currentUser?.password ?? 'hidden',
-          isEmailVerified: true);
+        email: currentUser!.email,
+        id: currentUser!.id,
+        isEmailVerified: true,
+      );
     });
   }
 }

@@ -17,18 +17,21 @@ class AuthService implements AuthProvider {
     required String email,
     required String password,
   }) {
-    return provider.createUser(email: email, password: password);
+    return provider.createUser(
+      email: email,
+      password: password,
+    );
   }
 
   @override
   AuthUser? get currentUser => provider.currentUser;
 
   @override
-  Future<AuthUser> logIn({
-    required String email,
-    required String password,
-  }) {
-    return provider.logIn(email: email, password: password);
+  Future<AuthUser> logIn({required String email, required password}) {
+    return provider.logIn(
+      email: email,
+      password: password,
+    );
   }
 
   @override

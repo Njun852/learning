@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:mynotes/extensions/list/filter.dart';
-import 'package:mynotes/services/auth/crud/crud_exceptios.dart';
+import 'package:mynotes/services/crud/crud_exceptios.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart'
     show MissingPlatformDirectoryException, getApplicationDocumentsDirectory;
@@ -21,7 +21,6 @@ class NoteService {
   Stream<List<DatabaseNote>> get notes {
     final stream = _notesStreamController.stream as Stream<List<DatabaseNote>>;
     return stream.filter((note) {
-      print('$user, $note AHHHHHH');
       return note.userId == user.id;
     });
   }
@@ -140,10 +139,8 @@ class NoteService {
     DatabaseUser? createdUser;
     if (!dbIsOpen) {
       await open();
-      print('OOOOOOOOOOPEN');
     }
     try {
-      print('not found');
       createdUser = await getUser(email);
     } on CouldNotFindUser {
       createdUser = await createUser(email);
