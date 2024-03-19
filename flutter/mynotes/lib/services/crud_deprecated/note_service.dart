@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:mynotes/extensions/list/filter.dart';
-import 'package:mynotes/services/crud/crud_exceptios.dart';
+import 'package:mynotes/services/crud_deprecated/crud_exceptios.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart'
     show MissingPlatformDirectoryException, getApplicationDocumentsDirectory;
