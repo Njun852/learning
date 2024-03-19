@@ -1,11 +1,14 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:developer' as devtools show log;
 import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/enums/menu_action.dart';
 import 'package:mynotes/services/auth/auth_exceptions.dart';
 import 'package:mynotes/services/auth/auth_service.dart';
+import 'package:mynotes/services/auth/bloc/auth_block.dart';
+import 'package:mynotes/services/auth/bloc/auth_event.dart';
 import 'package:mynotes/services/cloud/cloud_note.dart';
 import 'package:mynotes/services/cloud/firebase_cloud_storage.dart';
 import 'package:mynotes/utils/dialogs/logout_dialog.dart';
@@ -46,18 +49,8 @@ class _NotesViewState extends State<NotesView> {
             PopupMenuButton<MenuAction>(
               onSelected: (MenuAction value) async {
                 final shouldLogOut = await showLogoutDialog(context);
-                if (!shouldLogOut) {
-                  devtools.log('You are still signed in');
-                  return;
-                }
-                try {
-                  await AuthService.firebase().logOut();
-                  devtools.log('You are now logged out');
-                } on AuthException catch (e) {
-                  showErrorDialog(context, e.message);
-                }
-                Navigator.of(context)
-                    .pushNamedAndRemoveUntil(loginRoute, (route) => false);
+                if (!shouldLogOut) return;
+                context.read<AuthBloc>().add(const AuthEventLogOut());
               },
               itemBuilder: (context) {
                 return const [
@@ -80,7 +73,8 @@ class _NotesViewState extends State<NotesView> {
                     return NotesListView(
                       notes: allNotes,
                       onDeleteNote: (note) async {
-                        await _noteService.deleteNote(documentId: note.documentId);
+                        await _noteService.deleteNote(
+                            documentId: note.documentId);
                       },
                       onTap: (note) {
                         Navigator.of(context).pushNamed(createOrUpdateNoteRoute,
