@@ -14,12 +14,12 @@ void main() {
     title: 'Flutter Demo',
     theme: ThemeData(
         appBarTheme: const AppBarTheme(
+            iconTheme: IconThemeData(color: Colors.white),
             color: Colors.deepPurple,
             titleTextStyle: TextStyle(color: Colors.white, fontSize: 20),
             actionsIconTheme: IconThemeData(
               color: Colors.white,
             )),
-        iconTheme: const IconThemeData(color: Colors.white),
         popupMenuTheme: const PopupMenuThemeData(
           iconColor: Colors.white,
           iconSize: 30,
