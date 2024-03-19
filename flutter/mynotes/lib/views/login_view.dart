@@ -6,8 +6,9 @@ import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/services/auth/auth_exceptions.dart';
 import 'package:mynotes/services/auth/auth_service.dart';
 import 'package:mynotes/services/auth/auth_user.dart';
-import 'package:mynotes/services/auth/bloc/auth_block.dart';
+import 'package:mynotes/services/auth/bloc/auth_bloc.dart';
 import 'package:mynotes/services/auth/bloc/auth_event.dart';
+import 'package:mynotes/services/auth/bloc/auth_state.dart';
 import 'package:mynotes/utils/dialogs/error_dialog.dart';
 
 class LoginView extends StatefulWidget {
@@ -58,17 +59,34 @@ class _LoginViewState extends State<LoginView> {
           const SizedBox(
             height: 10,
           ),
-          TextButton(
-              onPressed: () async {
-                final String email = _email.text;
-                final String password = _password.text;
-                try {
-                  context.read<AuthBloc>().add(AuthEventLogIn(email, password));
-                } on AuthException catch (e) {
-                  showErrorDialog(context, e.message);
+          BlocListener<AuthBloc, AuthState>(
+            listener: (context, state) async {
+              if (state is AuthStateLoggedOut) {
+                if (state.exception == null) return;
+                if (state.exception is InvalidCredentialsAuthExcepion) {
+                  await showErrorDialog(context, 'Entered invalid credentials');
+                  return;
                 }
-              },
-              child: const Text('Login')),
+                if (state.exception is InvalidEmailAuthException) {
+                  await showErrorDialog(context, 'Entered invalid email');
+                  return;
+                }
+                if (state.exception is ChannelErrorAuthException) {
+                  await showErrorDialog(
+                      context, 'Please enter the required information');
+                  return;
+                }
+                await showErrorDialog(context, 'Something went wrong');
+              }
+            },
+            child: TextButton(
+                onPressed: () async {
+                  final String email = _email.text;
+                  final String password = _password.text;
+                  context.read<AuthBloc>().add(AuthEventLogIn(email, password));
+                },
+                child: const Text('Login')),
+          ),
           TextButton(
               onPressed: () {
                 Navigator.of(context)

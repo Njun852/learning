@@ -1,5 +1,4 @@
 import 'package:bloc/bloc.dart';
-import 'package:mynotes/services/auth/auth_exceptions.dart';
 import 'package:mynotes/services/auth/auth_provider.dart';
 import 'package:mynotes/services/auth/auth_user.dart';
 import 'package:mynotes/services/auth/bloc/auth_event.dart';
@@ -30,18 +29,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           );
           emit(AuthStateLoggedIn(user));
         } on Exception catch (e) {
-          emit(AuthStateLoginFailure(e));
+          emit(AuthStateLoggedOut(exception: e));
         }
       },
     );
 
     on<AuthEventLogOut>(((event, emit) async {
-      emit(const AuthStateLoading());
       try {
         await provider.logOut();
         emit(const AuthStateLoggedOut());
-      } on Exception catch (_) {
-        emit(const AuthStateLogoutFailure());
+      } on Exception catch (e) {
+        emit(AuthStateLoggedOut(exception: e));
       }
     }));
   }
