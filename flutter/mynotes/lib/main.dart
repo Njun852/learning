@@ -40,10 +40,6 @@ void main() {
       child: const HomePage(),
     ),
     routes: {
-      loginRoute: (context) => const LoginView(),
-      registerRoute: (context) => const RegisterView(),
-      verifyEmailRoute: (context) => const VerifyEmailView(),
-      notesRoute: (context) => const NotesView(),
       createOrUpdateNoteRoute: (context) => const CreateUpdateNoteView()
     },
   ));
@@ -64,12 +60,15 @@ class _HomePageState extends State<HomePage> {
       builder: (context, state) {
         if (state is AuthStateLoggedIn) return const NotesView();
         if (state is AuthStateNeedsVerification) return const VerifyEmailView();
-        if (state is AuthStateLoggedOut) return const LoginView();
+        if (state is AuthStateLoggedOut) {
+          return const LoginView();
+        }
+        if (state is AuthStateRegistering) return const RegisterView();
+
         return const Scaffold(
           body: CircularProgressIndicator(),
         );
       },
     );
-
   }
 }
