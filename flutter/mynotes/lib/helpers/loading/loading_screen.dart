@@ -42,9 +42,8 @@ class LoadingScreen {
             //0.8 means we have 20% margin from the screen
             constraints: BoxConstraints(
               maxWidth: size.width * 0.8,
-              maxHeight: size.height * 0.8,
+              maxHeight: size.width * 0.8,
               minWidth: size.width * 0.5,
-              minHeight: size.height * 0.5,
             ),
             //gives us border so we can differentiate it with the background
             decoration: BoxDecoration(

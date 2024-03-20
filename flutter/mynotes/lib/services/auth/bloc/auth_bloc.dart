@@ -21,9 +21,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             password: event.password,
           );
           await provider.sendEmailVerification();
-          emit(const AuthStateNeedsVerification());
+          emit(const AuthStateNeedsVerification(isLoading: false));
         } on Exception catch (e) {
-          emit(AuthStateRegistering(exception: e));
+          emit(AuthStateRegistering(exception: e, isLoading: false));
         }
       },
     );
@@ -35,11 +35,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         return;
       }
       if (!user.isEmailVerified) {
-        emit(const AuthStateNeedsVerification());
+        emit(const AuthStateNeedsVerification(isLoading: false));
         return;
       }
-      emit(AuthStateLoggedIn(user));
-      print('hi')
+      emit(AuthStateLoggedIn(user: user, isLoading: false));
     });
 
     on<AuthEventLogIn>(
@@ -52,10 +51,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             password: event.password,
           );
           if (!user.isEmailVerified) {
-            emit(const AuthStateNeedsVerification());
+            emit(const AuthStateNeedsVerification(isLoading: false));
           } else {
             emit(const AuthStateLoggedOut(isLoading: false));
-            emit(AuthStateLoggedIn(user));
+            emit(AuthStateLoggedIn(isLoading: false, user: user));
           }
         } on Exception catch (e) {
           emit(AuthStateLoggedOut(exception: e, isLoading: false));
