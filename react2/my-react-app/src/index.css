@@ -1,20 +1,4 @@
-*{
-  font-family: Arial, Helvetica, sans-serif;
-}
-.welcome-message {
-  font-size: 2.5em;
-  background-color: rgb(96, 246, 76);
-  color: white;
-  padding: 10px;
-  border-radius: 5px;
-  margin: 0;
-}
-
-.login-prompt {
-  font-size: 2.5em;
-  background-color: rgb(246, 99, 76);
-  color: white;
-  padding: 10px;
-  border-radius: 5px;
-  margin: 0;
+.list-category {
+    font-size: 2.5em;
+    font-weight: bold;
 }
